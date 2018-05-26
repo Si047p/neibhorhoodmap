@@ -1,0 +1,205 @@
+<html>
+ <head>
+   <meta charset="utf-8">
+   <style>
+     html,
+     body {
+       font-family: Arial, sans-serif;
+       margin: 0;
+       padding: 0;
+       border: 0;
+     }
+     #container {
+       height: 100%;
+       position: relative;
+     }
+     h1{
+       color: #525454;
+       font-size: 22px;
+       margin: 0 0 10px 0;
+       text-align: center;
+       border-bottom:  10px;
+     }
+     #hide-marker,
+     #show-marker {
+       width: 48%;
+     }
+     hr {
+       background: #D0D7D9;
+       height: 1px;
+       margin: 20px 0 20px 0;
+       border: none;
+     }
+     #map {
+       bottom:0px;
+       height: 100%;
+       left: 5px;
+       position: absolute;
+       right: 0px;
+     }
+     #markerList {
+       width: 0;
+       position: fixed;
+       z-index: 1;
+       top 0;
+       left: 0;
+       overflow-x: hidden;
+       transition: 0.1s;
+       height: 100%;
+       background-color: black;
+     }
+     #toggle {
+       position: absolute;
+       top:0;
+       left:0;
+     }
+     @media screen and (max-height: 450px) {
+    .sidenav {padding-top: 10px;}
+}
+   </style>
+ </head>
+
+ <body>
+   <div id="markerList">
+     <input id="show-markers" type="button" value="Show Markers">
+     <input id="hide-markers" type="button" value="Hide Markers">
+     <hr>
+     <span>Search parks in the area</br /span>
+     <input id="places-search" type="text" placeholder="Fullers Park">
+   </div>
+   <h1>Parks In Your Neighborhood</h1>
+    <!-- <button id= "toggle" onclick="menuToggle()">Try it</button> -->
+     <span id="toggle" style="font-size:30px;cursor:pointer" onclick="menuToggle()">&#9776;
+     </span>
+   </h1>
+   <div id=container>
+
+     <div id="map"></div>
+   </div>
+    <script>
+      var menuOpen = false;
+      function menuToggle() {
+          var x = document.getElementById("markerList");
+          if (menuOpen === false) {
+              document.getElementById("markerList").style.width = "250px";
+              document.getElementById("toggle").style.left = "250px";
+          } else {
+              document.getElementById("markerList").style.width = "0";
+              document.getElementById("toggle").style.left = "0";
+          };
+          menuOpen = !menuOpen;
+          console.log(menuOpen);
+      }
+      // Create map and markers variable
+      var map;
+      // Create the default map
+      function initMap() {
+        var styles = [
+          {
+            featureType: 'water',
+            stylers: [
+              { color: '#19a0d8' }
+            ]
+          },{
+            featureType: 'administrative',
+            elementType: 'labels.text.stroke',
+            stylers: [
+              { color: '#ffffff' },
+              { weight: 6 }
+            ]
+          },{
+            featureType: 'administrative',
+            elementType: 'labels.text.fill',
+            stylers: [
+              { color: '#e85113' }
+            ]
+          },{
+            featureType: 'road.highway',
+            elementType: 'geometry.stroke',
+            stylers: [
+              { color: '#efe9e4' },
+              { lightness: -40 }
+            ]
+          },{
+            featureType: 'road.highway',
+            elementType: 'labels.icon',
+            stylers: [
+              { visibility: 'off' }
+            ]
+          },{
+            featureType: 'water',
+            elementType: 'labels.text.stroke',
+            stylers: [
+              { lightness: 100 }
+            ]
+          }, {
+            featureType: 'water',
+            elementType: 'labels.text.fill',
+            stylers: [
+              { lightness: -100 }
+            ]
+          }, {
+            featureType: 'poi',
+            elementType: 'geometry',
+            stylers: [
+              { visibility: 'on' },
+              { color: '#f0e4d3' }
+            ]
+          },{
+            featureType: 'road.highway',
+            elementType: 'geometry.fill',
+            stylers: [
+              { color: '#efe9e4' },
+              { lightness: -25 }
+            ]
+          }
+        ];
+
+        var mapCenter = {lat: 33.971452, lng: -84.496482};
+
+        map = new google.maps.Map(document.getElementById('map'), {
+        center: mapCenter,
+        zoom: 13,
+        styles: styles,
+        mapTypeControl: false
+        });
+
+        var request = {
+          location: mapCenter,
+          radius: '4500',
+          type: ['park']
+        };
+
+        service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, callback);
+      }
+      var place = [];
+      function callback(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            place.push(results[i]);
+            createMarker(results[i]);
+          }
+        }
+      }
+      function createMarker(place) {
+        var placeLoc = place.geometry.location;
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent(place.name);
+          infowindow.open(map, this);
+        });
+      };
+      console.log();
+
+    </script>
+   <script async defer
+       src=
+       "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyC6r_RKOilTEYfznll_Vrux-xs1O99Thyo&callback=initMap">
+   </script>
+ </body>
+</html>
