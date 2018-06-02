@@ -1,10 +1,94 @@
 html,
 body {
-	height: 100%;
+	font-family: Arial, sans-serif;
 	margin: 0;
 	padding: 0;
+	border: 0;
 }
-
-#mapp {
+#container {
+	height: 90%;
+	position: relative;
+}
+#h1{
+	color: #525454;
+	font-size: 22px;
+	text-align: center;
+	border-bottom:  10px;
+	margin:  auto;
+	/* display: inline-block; */
+}
+#hide-marker,
+#show-marker {
+	width: 48%;
+}
+hr {
+	background: #D0D7D9;
+	height: 1px;
+	margin: 20px 0 20px 0;
+	border: none;
+}
+#map {
+	bottom:0px;
 	height: 100%;
+	left: 5px;
+	position: absolute;
+	right: 0px;
+	z-index: 1;
+}
+#markerList {
+	width: 0;
+	position: fixed;
+	z-index: 2;
+	top 0;
+	bottom 0;
+	left: 0;
+	top:  0;
+	overflow-x: hidden;
+	transition: 0.1s;
+	max-height: 700px;
+	bottom: 0;
+	background-color: aqua;
+}
+#toggle {
+	position: absolute;
+	top:0;
+	left:0;
+	z-index: 3;
+	padding: 1em;
+	margin: -1em;
+}
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }
