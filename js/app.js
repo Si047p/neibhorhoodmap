@@ -99,8 +99,6 @@ function initMap() {
   service = new google.maps.places.PlacesService(map);
   service.nearbySearch(request, callback);
 
-  var largeInfowindow = new google.maps.InfoWindow();
-
   // Create markers and populate model.
   function callback(results, status) {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
@@ -118,37 +116,22 @@ function initMap() {
     var marker = new google.maps.Marker({
       map: map,
       position: placeLoc,
+      placeID: place.id,
       title: place.name,
       animation: google.maps.Animation.DROP
     });
 
     // Listen for marker actions
     marker.addListener('click', function() {
-        populateInfoWindow(this, largeInfowindow);
+        this.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(function(){ marker.setAnimation(null); }, 750);
+        var placeID=this.placeID;
+        var theplace=this.position
+        var place=this.title;
+        modal(place);
       });
-    marker.addListener("mouseover", function() {
-      this.setAnimation(google.maps.Animation.BOUNCE);
-    });
-    marker.addListener('mouseout', function() {
-      this.setAnimation(google.maps.Animation.null);
-    });
   }
 
-  //Zoom into marker
-  this.markerZoom = function(placeID) {
-    // Initialize the geocoder.
-    var geocoder = new google.maps.Geocoder();
-    // Get the address or place that the user entered.
-    geocoder.geocode(
-      {
-         placeId: placeID
-      }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          map.setCenter(results[0].geometry.location);
-          map.setZoom(15);
-        }
-      });
-      }
 }
 
 // Modal view with Flickr API
@@ -165,7 +148,7 @@ var modal = function(place) {
               self.photoArray.push( { url: item.media.m } );
           });
           document.getElementById("picModal").style.display = "block";
-        } else { window.alert("No photos found.  Please upload a current picture to Flickr when you visit!");
+        } else { window.alert("No Flickr photos found for " + place +".  Please upload a current picture to Flickr when you visit!");
         };
       },
       error: function (xhr, status, error) {
@@ -224,13 +207,13 @@ var ViewModel = function(){
       menuOpen = !menuOpen;
   }
 
-  self.parkFilter = ko.observable('');
-
-  self.filteredParks = ko.computed(function() {
-    var parkFilter = self.parkFilter();
-    if (!parkFilter) { return self.filteredParks(); }
-    return self.filteredParks().parkFilter(function(i) { return i.indexOf(parkFilter) > -1; });
-  });
+  // self.parkFilter = ko.observable();
+  //
+  // self.filteredParks = ko.computed(function() {
+  //   var parkFilter = self.parkFilter();
+  //   if (!parkFilter) { return self.filteredParks(); }
+  //   return self.filteredParks().parkFilter(function(i) { return i.indexOf(parkFilter) > -1; });
+  // });
 };
 
 ko.applyBindings(ViewModel());
