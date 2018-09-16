@@ -102,9 +102,12 @@ function initMap() {
   // Create markers and populate model.
   function callback(results, status) {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
+      var bounds = new google.maps.LatLngBounds();
       for (var i = 0; i < results.length; i++) {
         self.parkList.push( new Park(results[i]) );
+        bounds.extend(results[i].geometry.location);
       };
+      map.fitBounds(bounds);
     }
   };
 
@@ -182,6 +185,8 @@ var Park = function(data){
 }
 
 
+
+
 var ViewModel = function(){
 
   var self=this;
@@ -242,5 +247,9 @@ var ViewModel = function(){
     }
 });
 }
+
+mapError = function() {
+	window.alert('Google maps failed to load. Please try reloading the page.');
+};
 
 ko.applyBindings(ViewModel());
