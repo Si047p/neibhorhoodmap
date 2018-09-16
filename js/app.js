@@ -104,40 +104,13 @@ function initMap() {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
       for (var i = 0; i < results.length; i++) {
         self.parkList.push( new Park(results[i]) );
-        createMarker(results[i]);
       };
     }
   };
 
-  //Markers creation
-  function createMarker(place) {
-    var placeLoc = place.geometry.location;
-    var placeName = place.name;
-    var marker = new google.maps.Marker({
-      map: map,
-      position: placeLoc,
-      placeID: place.id,
-      title: place.name,
-      animation: google.maps.Animation.DROP
-    });
-
-    // Listen for marker actions
-    marker.addListener('click', function() {
-        this.setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout(function(){ marker.setAnimation(null); }, 750);
-        var placeID=this.placeID;
-        var theplace=this.position
-        var place=this.title;
-        map.setCenter(theplace);
-        map.setZoom(15);
-        modal(place);
-      });
-  }
-
   //Zoom into marker
   this.markerZoom = function(placeID) {
 
-      // window.alert(placeID);
       // Initialize the geocoder.
       var geocoder = new google.maps.Geocoder();
       // Get the address or place that the user entered.
@@ -186,6 +159,26 @@ var Park = function(data){
   this.vicinity = ko.observable(data.vicinity);
   this.icon = ko.observable(data.icon);
   this.location = ko.observableArray();
+  this.marker = ko.observableArray();
+
+  var marker = new google.maps.Marker({
+    map: map,
+    position: data.geometry.location,
+    placeID: data.id,
+    title: data.name,
+    animation: google.maps.Animation.DROP,
+    visible: true,
+  });
+
+  // Listen for marker actions
+  marker.addListener('click', function() {
+      this.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function(){ marker.setAnimation(null); }, 750);
+      map.setCenter(this.position);
+      map.setZoom(15);
+      modal(this.title);
+    });
+  this.marker = marker;
 }
 
 
@@ -234,12 +227,18 @@ var ViewModel = function(){
   this.filteredParks = ko.computed(function() {
      var filter = self.parkFilter().toLowerCase();
      if (!filter) {
-          return self.parkList();
+          for (var i = 0; i < self.parkList().length; i++) {
+           this.parkList()[i].marker.setVisible (true);
+          };
+           return self.parkList();
       } else {
         return ko.utils.arrayFilter(self.parkList(), function(park) {
           var name = park.name().toLowerCase();
-          return (name.indexOf(filter) > -1);
-      });
+          var show = name.indexOf(filter) > -1;
+          park.marker.setVisible (show);
+          return (show);
+        });
+
     }
 });
 }
