@@ -9,8 +9,8 @@
  <body>
    <div id="markerList">
      <span>Search parks in the area</br /span>
-     <input id="places-search" placeholder="Fullers Park" data-bind="textInput: parkList">
-     <ul data-bind="foreach: parkList">
+     <input id="places-search" placeholder="Search Parks" data-bind="textInput: parkFilter", valueUpdate: 'afterkeydown'>
+     <ul data-bind="foreach: filteredParks">
         <li data-bind="click: listClick, text: name"></li>
 
      </ul>

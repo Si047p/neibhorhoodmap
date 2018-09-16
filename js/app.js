@@ -128,9 +128,29 @@ function initMap() {
         var placeID=this.placeID;
         var theplace=this.position
         var place=this.title;
+        map.setCenter(theplace);
+        map.setZoom(15);
         modal(place);
       });
   }
+
+  //Zoom into marker
+  this.markerZoom = function(placeID) {
+
+      // window.alert(placeID);
+      // Initialize the geocoder.
+      var geocoder = new google.maps.Geocoder();
+      // Get the address or place that the user entered.
+      geocoder.geocode(
+        {
+           placeId: placeID
+        }, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            map.setCenter(results[0].geometry.location);
+            map.setZoom(15);
+          }
+      });
+    }
 
 }
 
@@ -207,13 +227,21 @@ var ViewModel = function(){
       menuOpen = !menuOpen;
   }
 
-  // self.parkFilter = ko.observable();
-  //
-  // self.filteredParks = ko.computed(function() {
-  //   var parkFilter = self.parkFilter();
-  //   if (!parkFilter) { return self.filteredParks(); }
-  //   return self.filteredParks().parkFilter(function(i) { return i.indexOf(parkFilter) > -1; });
-  // });
-};
+
+// Filter parkList
+  this.parkFilter = ko.observable("");
+
+  this.filteredParks = ko.computed(function() {
+     var filter = self.parkFilter().toLowerCase();
+     if (!filter) {
+          return self.parkList();
+      } else {
+        return ko.utils.arrayFilter(self.parkList(), function(park) {
+          var name = park.name().toLowerCase();
+          return (name.indexOf(filter) > -1);
+      });
+    }
+});
+}
 
 ko.applyBindings(ViewModel());
